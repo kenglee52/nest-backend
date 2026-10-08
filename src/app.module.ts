@@ -7,7 +7,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './module/users/user.module';
 import { CategoryModule } from './module/category/category.module';
-
+import { UnitModule } from './module/unit/unit.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +25,7 @@ import { CategoryModule } from './module/category/category.module';
     }),
     UserModule,
     CategoryModule,
+    UnitModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

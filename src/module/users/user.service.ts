@@ -122,7 +122,8 @@ export class UserService {
           brandName: true,
           logo: true,
           laoName: true,
-          laoLastname: true 
+          laoLastname: true,
+          brandType: true,
         }
       });
     } catch (error) {

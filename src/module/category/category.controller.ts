@@ -6,8 +6,8 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  Patch,
   Post,
+  Put,
   UseGuards,
 } from "@nestjs/common";
 import { CategoryService } from "./category.service";
@@ -34,12 +34,12 @@ export class CategoryController {
   }
 
   @Get("byOwner/:id")
-  @Roles("SHOP_OWNER")
+  @Roles("SHOP_OWNER", "CUSTOMER")
   findAllCategoryByOwner(@Param("id") id: string) {
     return this.categoryService.findAllCategoryByOwner(id);
   }
 
-  @Patch(":id")
+  @Put(":id")
   @Roles("SHOP_OWNER")
   updateCategory(@Param("id") id: string, @Body() dto: CategoryDto) {
     return this.categoryService.updateCategory(dto, id);
