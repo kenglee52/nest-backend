@@ -113,7 +113,8 @@ export class UserService {
     try {
       return this.userRepository.find({
         where: {
-          role: "SHOP_OWNER"
+          role: "SHOP_OWNER",
+          isActive: true
         },
         select: {
           brandName: true,
