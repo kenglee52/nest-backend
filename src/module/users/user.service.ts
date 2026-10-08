@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/user.dto';
 import { UserLoginDto } from './dto/user-login.dto';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class UserService {
@@ -118,7 +120,9 @@ export class UserService {
         },
         select: {
           brandName: true,
-          logo: true
+          logo: true,
+          laoName: true,
+          laoLastname: true 
         }
       });
     } catch (error) {
@@ -132,6 +136,19 @@ export class UserService {
       return this.userRepository.find({
         where: { role: "SHOP_OWNER" }
       })
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException("Server error");
+    }
+  }
+
+  async updateOwnerStatus(id: string): Promise<User> {
+    try {
+      const _id = new ObjectId(id)
+      const owner = await this.userRepository.findOneBy({_id});
+      if(!owner) throw new NotFoundException("ບໍ່ພົບຂໍ້ມູນທີ່ຕ້ອງການອະນຸມັດ")
+      owner.isActive = true;
+      return await this.userRepository.save(owner);
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException("Server error");

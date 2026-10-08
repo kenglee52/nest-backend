@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/user.dto";
 import { UserLoginDto } from "./dto/user-login.dto";
@@ -40,5 +40,12 @@ export class UserController {
          @Roles("ADMIN")
          findAllShopOwner(){
             return this.userService.findAllShopOwner();
+         }
+
+         @Put("approve/:id")
+         @UseGuards(RolesGuard)
+         @Roles("ADMIN")
+         approveOwner(@Param("id") id: string) {
+            return this.userService.updateOwnerStatus(id);
          }
 }

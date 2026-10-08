@@ -6,6 +6,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './module/users/user.module';
+import { CategoryModule } from './module/category/category.module';
 
 @Module({
   imports: [
@@ -22,8 +23,8 @@ import { UserModule } from './module/users/user.module';
         autoLoadEntities: true,
       }),
     }),
-
     UserModule,
+    CategoryModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
