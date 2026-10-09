@@ -34,7 +34,7 @@ export class CategoryController {
   }
 
   @Get("byOwner/:id")
-  @Roles("SHOP_OWNER", "CUSTOMER")
+  @Roles("SHOP_OWNER", "CUSTOMER", "ADMIN")
   findAllCategoryByOwner(@Param("id") id: string) {
     return this.categoryService.findAllCategoryByOwner(id);
   }

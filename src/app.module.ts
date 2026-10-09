@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { UserModule } from './module/users/user.module';
 import { CategoryModule } from './module/category/category.module';
 import { UnitModule } from './module/unit/unit.module';
+import { ProductModule } from './module/product/product.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +27,7 @@ import { UnitModule } from './module/unit/unit.module';
     UserModule,
     CategoryModule,
     UnitModule,
+    ProductModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

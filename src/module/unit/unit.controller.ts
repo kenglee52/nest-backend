@@ -21,7 +21,7 @@ export class UnitController {
   constructor(private readonly unitService: UnitService) {}
 
   @Post()
-  @Roles("SHOP_OWNER")
+  @Roles("SHOP_OWNER", "ADMIN")
   @HttpCode(HttpStatus.CREATED)
   createUnit(@Body() dto: UnitDto) {
     return this.unitService.createUnit(dto);
@@ -34,7 +34,7 @@ export class UnitController {
   }
 
   @Get("byOwner/:id")
-  @Roles("SHOP_OWNER", "CUSTOMER")
+  @Roles("SHOP_OWNER", "CUSTOMER", "ADMIN")
   findAllUnitByOwner(@Param("id") id: string) {
     return this.unitService.findAllUnitByOwner(id);
   }
