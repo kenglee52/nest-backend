@@ -1,4 +1,4 @@
-import { Entity, Column, ObjectIdColumn } from "typeorm";
+import { Entity, Column, ObjectIdColumn , CreateDateColumn, UpdateDateColumn} from "typeorm";
 import { ObjectId } from "mongodb";
 export class ProductColorImage {
   @Column()
@@ -26,7 +26,7 @@ export class Product {
   unit: ObjectId;
 
   @Column()
-  importPrice: number;
+  importPrice?: number;
 
   @Column()
   price: number;
@@ -57,4 +57,10 @@ export class Product {
 
   @Column()
   owner: ObjectId;
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @UpdateDateColumn()
+  updatedAt: Date
 }

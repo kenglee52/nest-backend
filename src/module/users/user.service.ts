@@ -119,6 +119,7 @@ export class UserService {
           isActive: true
         },
         select: {
+          _id: true,
           brandName: true,
           logo: true,
           laoName: true,
