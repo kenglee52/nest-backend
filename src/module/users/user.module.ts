@@ -3,9 +3,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [
+         ScheduleModule.forRoot(),
          TypeOrmModule.forFeature([User])
   ],
   controllers: [UserController],

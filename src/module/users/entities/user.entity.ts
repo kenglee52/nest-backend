@@ -93,6 +93,12 @@ export class User {
   @Column()
   isActive?: boolean;
 
+  @Column({default: "PENDING"})
+  approveStatus: string;
+
+  @Column()
+  approvedAt?: Date;
+
   @CreateDateColumn()
   createdAt?: Date;
 

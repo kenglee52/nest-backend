@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MongoRepository } from 'typeorm';
+import { MongoRepository, Not } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -14,6 +14,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/user.dto';
 import { UserLoginDto } from './dto/user-login.dto';
 import { ObjectId } from 'mongodb';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class UserService {
@@ -29,7 +30,6 @@ export class UserService {
           tel: dto.tel,
         },
       });
-
       if (telExist) {
         throw new ConflictException('ເບີໂທລະສັບນີ້ຖືກໃຊ້ແລ້ວ');
       }
@@ -39,7 +39,6 @@ export class UserService {
             email: dto.email,
           },
         });
-
         if (emailExist) {
           throw new ConflictException('ອີເມວນີ້ຖືກນຳໃຊ້ແລ້ວ');
         }
@@ -135,8 +134,22 @@ export class UserService {
 
   async findAllShopOwner(): Promise<User[]> {
     try {
+      return await this.userRepository.find({
+        where: {
+          role: "SHOP_OWNER",
+          isActive: false,
+          approveStatus: { $ne: "REJECTED" },
+        } as any,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException("Server error");
+    }
+  }
+  async findAllApprovedOwner(): Promise<User[]> {
+    try {
       return this.userRepository.find({
-        where: { role: "SHOP_OWNER" }
+        where: { role: "SHOP_OWNER", isActive: true }
       })
     } catch (error) {
       console.error(error);
@@ -147,13 +160,68 @@ export class UserService {
   async updateOwnerStatus(id: string): Promise<User> {
     try {
       const _id = new ObjectId(id)
-      const owner = await this.userRepository.findOneBy({_id});
-      if(!owner) throw new NotFoundException("ບໍ່ພົບຂໍ້ມູນທີ່ຕ້ອງການອະນຸມັດ")
+      const owner = await this.userRepository.findOneBy({ _id });
+      if (!owner) throw new NotFoundException("ບໍ່ພົບຂໍ້ມູນທີ່ຕ້ອງການອະນຸມັດ")
       owner.isActive = true;
+      owner.approveStatus = "APPROVED";
+      owner.approvedAt = new Date();
       return await this.userRepository.save(owner);
     } catch (error) {
       console.error(error);
       throw new InternalServerErrorException("Server error");
     }
+  }
+
+  async findAllRejectedOwner(): Promise<User[]> {
+    try {
+      return this.userRepository.find({
+        where: { approveStatus: "REJECTED" }
+      });
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException("Server error");
+    }
+  }
+
+  async rejectOwner(id: string): Promise<User> {
+    try {
+      const _id = new ObjectId(id);
+      const owner = await this.userRepository.findOneBy({ _id });
+      if (!owner) throw new NotFoundException("ບໍ່ພົບຂໍ້ມູນທີ່ຕ້ອງການປະຕິເສດ");
+      owner.approveStatus = "REJECTED"
+      return await this.userRepository.save(owner);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException("Server error");
+    }
+  }
+
+  async checkAndExpireUsers() {
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    try {
+      const result = await this.userRepository.updateMany(
+        {
+          role: "SHOP_OWNER",
+          isActive: true,
+          approvedAt: { $lte: oneMonthAgo },
+        },
+        {
+          $set: { isActive: false },
+        },
+      );
+
+      if (result.modifiedCount > 0) {
+        console.log(`ອັບເດດປິດການໃຊ້ງານອັດຕະໂນມັດ (ກາຍ 1 ເດືອນ): ${result.modifiedCount} ບັນຊີ`);
+      }
+    } catch (error) {
+      console.error("ເກີດຂໍ້ຜິດພາດໃນການອັບເດດສະຖານະອັດຕະໂນມັດ:", error);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async handleCron() {
+    await this.checkAndExpireUsers();
   }
 }

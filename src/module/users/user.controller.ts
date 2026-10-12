@@ -41,11 +41,31 @@ export class UserController {
          findAllShopOwner(){
             return this.userService.findAllShopOwner();
          }
+         @Get("approved")
+         @UseGuards(RolesGuard)
+         @Roles("ADMIN")
+         findAllApprovedOwner(){
+            return this.userService.findAllApprovedOwner();
+         }
 
          @Put("approve/:id")
          @UseGuards(RolesGuard)
          @Roles("ADMIN")
          approveOwner(@Param("id") id: string) {
             return this.userService.updateOwnerStatus(id);
+         }
+         @Put("reject/:id")
+         @UseGuards(RolesGuard)
+         @Roles("ADMIN")
+         rejectOwner(@Param("id") id: string) {
+            return this.userService.rejectOwner(id);
+         }
+
+         
+         @Get("rejected")
+         @UseGuards(RolesGuard)
+         @Roles("ADMIN")
+         findRejectOwner() {
+            return this.userService.findAllRejectedOwner();
          }
 }
