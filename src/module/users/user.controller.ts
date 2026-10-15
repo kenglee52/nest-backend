@@ -68,4 +68,10 @@ export class UserController {
          findRejectOwner() {
             return this.userService.findAllRejectedOwner();
          }
+         @Get("not-active")
+         @UseGuards(RolesGuard)
+         @Roles("ADMIN")
+         findApprovedOwnerNotActive() {
+            return this.userService.findApprovedOwnerNotActive();
+         }
 }

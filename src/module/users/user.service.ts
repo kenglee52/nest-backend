@@ -220,6 +220,18 @@ export class UserService {
     }
   }
 
+  async findApprovedOwnerNotActive(): Promise<User[]> {
+    try {
+      return this.userRepository.find({
+        approveStatus: "APPROVED",
+        isActive: false
+      });
+    } catch (error) {
+       console.error(error);
+       throw new InternalServerErrorException("Server error");
+    }
+  }
+
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleCron() {
     await this.checkAndExpireUsers();

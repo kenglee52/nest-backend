@@ -9,6 +9,7 @@ import { UserModule } from './module/users/user.module';
 import { CategoryModule } from './module/category/category.module';
 import { UnitModule } from './module/unit/unit.module';
 import { ProductModule } from './module/product/product.module';
+import { IncomeModule } from './module/income/income.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,6 +29,7 @@ import { ProductModule } from './module/product/product.module';
     CategoryModule,
     UnitModule,
     ProductModule,
+    IncomeModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
